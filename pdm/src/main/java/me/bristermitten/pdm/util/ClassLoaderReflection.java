@@ -1,6 +1,7 @@
 package me.bristermitten.pdm.util;
 
 import org.jetbrains.annotations.NotNull;
+import xyz.janboerman.scalaloader.plugin.ScalaPluginClassLoader;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,50 +11,63 @@ import java.net.URLClassLoader;
 public class ClassLoaderReflection
 {
 
-    private static final Method ADD_URL_METHOD;
-
-    static
-    {
-        final Method addURL;
-
-        // open the classloader module for java9+ so it wont have a warning
-        try
-        {
-            openUrlClassLoaderModule();
-        }
-        catch (Throwable ignored)
-        {
-            // ignore exception. Java 8 wont have the module, so it wont matter if we ignore it
-            // cause there will be no warning
-        }
-
-        try
-        {
-            addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            addURL.setAccessible(true);
-        }
-        catch (NoSuchMethodException exception)
-        {
-            throw new AssertionError(exception);
-        }
-
-        ADD_URL_METHOD = addURL;
-    }
+    private static Method addUrl;
 
     private ClassLoaderReflection()
     {
         throw new AssertionError("This class cannot be instantiated.");
     }
 
+    private static Method addUrlMethod()
+    {
+        if (ClassLoaderReflection.addUrl == null)
+        {
+            final Method addURL;
+
+            // open the classloader module for java9+ so it wont have a warning
+            try
+            {
+                openUrlClassLoaderModule();
+            }
+            catch (Throwable ignored)
+            {
+                // ignore exception. Java 8 wont have the module, so it wont matter if we ignore it
+                // cause there will be no warning
+            }
+
+            try
+            {
+                addURL = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+                addURL.setAccessible(true);
+            }
+            catch (NoSuchMethodException exception)
+            {
+                throw new AssertionError(exception);
+            }
+
+            ClassLoaderReflection.addUrl = addURL;
+        }
+
+        return ClassLoaderReflection.addUrl;
+    }
+
     public static void addURL(@NotNull final URLClassLoader classLoader, @NotNull final URL url)
     {
-        try
+        if (classLoader instanceof ScalaPluginClassLoader)
         {
-            ADD_URL_METHOD.invoke(classLoader, url);
+            ScalaPluginClassLoader scalaPluginClassLoader = (ScalaPluginClassLoader) classLoader;
+            scalaPluginClassLoader.addUrl(url);
         }
-        catch (IllegalAccessException | InvocationTargetException exception)
+        else
         {
-            throw new IllegalArgumentException(exception);
+            try
+            {
+                addUrlMethod().invoke(classLoader, url);
+            }
+            catch (IllegalAccessException | InvocationTargetException exception)
+            {
+                throw new IllegalArgumentException(exception);
+            }
         }
     }
 

@@ -1,9 +1,13 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0' apply false
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
 
     group 'me.bristermitten'
-    version '0.0.33'
+    version '0.0.33-ScalaLoader'
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -59,3 +63,4 @@ task publishAllToMaven {
     dependsOn subprojects.find { it.name == 'common-lib' }.tasks.getByName("publish")
     dependsOn subprojects.find { it.name == 'pdm' }.tasks.getByName("publish")
 }
+

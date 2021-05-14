@@ -11,6 +11,10 @@ this project does not yet adhere to semantic versioning as it's in very early st
    - Example: The `example` module
    - Global: Changes that apply everywhere
    - Readme: `README.MD`
+## [0.0.33-ScalaLoader]
+### Fixed
+   - Will call ScalaPluginClassLoader#addUrl instead of URLClassLoader#addUrl when the plugin is a [ScalaPlugin](https://github.com/Jannyboy11/ScalaPluginLoader).
+     This ensures that ScalaPlugin can continue to use PDM while running on Java 16 or higher.
 ## [0.0.33] - 2021-02-15
 ### Added
    - Runtime: A bit of documentation has been added to `PluginDependencyManager` and other classes
