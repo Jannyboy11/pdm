@@ -12,6 +12,17 @@ public class ClassLoaderReflection
 {
 
     private static Method addUrl;
+    private static final boolean scalaLoaderPresent;
+    static {
+        boolean present;
+        try {
+            Class.forName("xyz.janboerman.scalaloader.plugin.ScalaPluginClassLoader");
+            present = true;
+        } catch (ClassNotFoundException e) {
+            present = false;
+        }
+        scalaLoaderPresent = present;
+    }
 
     private ClassLoaderReflection()
     {
@@ -53,7 +64,8 @@ public class ClassLoaderReflection
 
     public static void addURL(@NotNull final URLClassLoader classLoader, @NotNull final URL url)
     {
-        if (classLoader instanceof ScalaPluginClassLoader)
+
+        if (scalaLoaderPresent && classLoader instanceof ScalaPluginClassLoader)
         {
             ScalaPluginClassLoader scalaPluginClassLoader = (ScalaPluginClassLoader) classLoader;
             scalaPluginClassLoader.addUrl(url);
