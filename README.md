@@ -90,9 +90,16 @@ This will return a `CompletableFuture<Void>` which is completed when all librari
 including transitive dependencies. Any that failed will be logged and handled gracefully.
 
 
-## Compling this badboy
+## Compiling this bad boy
 
+First you need the following stuff installed on your operating system:
+- A [Java Development Kit](https://jdk.java.net/) (version 8 or newer, latest=recommended)
+- [Gradle](https://gradle.org/install/) (version 6 or newer, latest=recommended)
+
+Then run the following command your shell:
 `gradle clean build -x test`
+and watch all the subprojects being built.
+Artifacts will be generated at ./<subproject>/build/libs/<artifact-name>.jar.
 
 
 ## Gradle Plugin
