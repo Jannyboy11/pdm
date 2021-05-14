@@ -90,6 +90,11 @@ This will return a `CompletableFuture<Void>` which is completed when all librari
 including transitive dependencies. Any that failed will be logged and handled gracefully.
 
 
+## Compling this badboy
+
+`gradle clean build -x test`
+
+
 ## Gradle Plugin
 
 PDM also includes a Gradle Plugin to automatically generate a `dependencies.json` file!
